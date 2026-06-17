@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from 'react'
 import {
   ChefHat,
   ShoppingBag,
+  UtensilsCrossed,
   Landmark,
   LayoutDashboard,
   Package,
@@ -23,6 +24,7 @@ import { useRouter } from 'next/navigation'
 const menuItems = [
   { href: '/equipe/admin/cozinha',        label: 'Cozinha',        icon: ChefHat },
   { href: '/equipe/admin/pedidos',         label: 'Pedidos',        icon: ShoppingBag },
+  { href: '/equipe/admin/cardapio',        label: 'Cardápio',       icon: UtensilsCrossed },
   { href: '/equipe/admin/caixa',           label: 'Caixa',          icon: Landmark },
   { href: '/equipe/admin',                 label: 'Dashboard',      icon: LayoutDashboard },
   { href: '/equipe/admin/estoque',         label: 'Estoque',        icon: Package },
