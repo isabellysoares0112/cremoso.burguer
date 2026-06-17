@@ -1,0 +1,14 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "D6Wxu6lg009T4SemlFuxK"
+uri = "file://cremosoburguer.tar.gz"
+type = "unspecified"
+title = "cremosoburguer.tar.gz — Backup atualizado"
+
+[[outputs]]
+id = "RIEnFey0sJ2Qo8ATAbp16"
+uri = "file://novos_arquivos_repo.tar.gz"
+type = "unspecified"
+title = "Arquivos novos do repositório + Relatório"
