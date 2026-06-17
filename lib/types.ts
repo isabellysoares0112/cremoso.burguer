@@ -49,7 +49,7 @@ export interface Customer {
 
 export type PaymentMethod = 'pix' | 'cartao' | 'dinheiro' | 'link'
 
-export type OrderStatus = 'novo' | 'preparando' | 'pronto' | 'entregue'
+export type OrderStatus = 'novo' | 'preparando' | 'pronto' | 'entregue' | 'cancelado'
 
 export interface Order {
   id: string

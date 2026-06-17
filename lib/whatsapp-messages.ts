@@ -38,6 +38,12 @@ export function getWhatsAppMessage(order: Order, newStatus: OrderStatus): string
         `🍔 Pedido *#${num}*\n\n` +
         `Obrigado pela preferência! Volte sempre❤️🔥`
       )
+    case 'cancelado':
+      return (
+        `❌ *Pedido cancelado*\n` +
+        `🍔 Pedido *#${num}*\n\n` +
+        `Seu pedido foi cancelado. Entre em contato conosco para mais informações.`
+      )
     default:
       return null
   }

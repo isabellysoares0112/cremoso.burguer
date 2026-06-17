@@ -14,14 +14,16 @@ const statusColors: Record<OrderStatus, { bg: string; text: string }> = {
   novo: { bg: 'bg-primary', text: 'text-primary-foreground' },
   preparando: { bg: 'bg-secondary', text: 'text-secondary-foreground' },
   pronto: { bg: 'bg-green-600', text: 'text-white' },
-  entregue: { bg: 'bg-muted', text: 'text-muted-foreground' }
+  entregue: { bg: 'bg-muted', text: 'text-muted-foreground' },
+  cancelado: { bg: 'bg-red-600', text: 'text-white' },
 }
 
 const statusLabels: Record<OrderStatus, string> = {
   novo: 'Novo',
   preparando: 'Preparando',
   pronto: 'Pronto',
-  entregue: 'Entregue'
+  entregue: 'Entregue',
+  cancelado: 'Cancelado',
 }
 
 export function OrdersPanel() {
@@ -96,6 +98,7 @@ export function OrdersPanel() {
             <option value="preparando">Preparando</option>
             <option value="pronto">Pronto</option>
             <option value="entregue">Entregue</option>
+            <option value="cancelado">Cancelado</option>
           </select>
         </div>
       </div>
@@ -153,6 +156,7 @@ export function OrdersPanel() {
                           <option value="preparando">Preparando</option>
                           <option value="pronto">Pronto</option>
                           <option value="entregue">Entregue</option>
+                          <option value="cancelado">Cancelado</option>
                         </select>
                       </td>
                       <td className="p-4 text-muted-foreground text-sm hidden lg:table-cell">
@@ -184,7 +188,7 @@ export function OrdersPanel() {
 
       {/* Summary */}
       <div className="mt-6 grid sm:grid-cols-4 gap-4">
-        {(['novo', 'preparando', 'pronto', 'entregue'] as OrderStatus[]).map((status) => {
+        {(['novo', 'preparando', 'pronto', 'entregue', 'cancelado'] as OrderStatus[]).map((status) => {
           const count = orders.filter(o => o.status === status).length
           const style = statusColors[status]
           

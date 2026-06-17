@@ -71,7 +71,7 @@ export function KitchenView() {
     return () => { if (cleanup) cleanup() }
   }, [load, loadOrders])
 
-  const activeOrders = orders.filter(o => o.status !== 'entregue')
+  const activeOrders = orders.filter(o => o.status !== 'entregue' && o.status !== 'cancelado')
 
   const fmt = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })
 
