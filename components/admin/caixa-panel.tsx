@@ -430,6 +430,24 @@ export function CaixaPanel() {
             </Button>
           </div>
 
+          {/* Resumo de hoje */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="bg-card border border-border rounded-xl p-4">
+              <p className="text-xs text-muted-foreground mb-1">Faturamento Hoje</p>
+              <p className="text-xl font-bold text-primary">{fmt(todayTotals.total)}</p>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-4">
+              <p className="text-xs text-muted-foreground mb-1">Pedidos Hoje</p>
+              <p className="text-xl font-bold text-foreground">{todayOrders.length}</p>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-4">
+              <p className="text-xs text-muted-foreground mb-1">Ticket Médio Hoje</p>
+              <p className="text-xl font-bold text-foreground">
+                {todayOrders.length > 0 ? fmt(todayTotals.total / todayOrders.length) : '—'}
+              </p>
+            </div>
+          </div>
+
           {/* 7-day summary */}
           <div className="bg-card border border-border rounded-xl overflow-hidden">
             <table className="w-full text-sm">
