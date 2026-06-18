@@ -70,12 +70,21 @@ export function CaixaPanel() {
   const fetchOrders = useCallback(async () => {
     setLoadingOrders(true)
     try {
-      const r = await fetch('/api/admin/orders')
+      const r = await fetch('/api/admin/orders', { cache: 'no-store' })
       const j = await r.json()
       setOrders(j.orders || [])
     } catch { /* ignore */ }
     finally { setLoadingOrders(false) }
   }, [])
+
+  useEffect(() => {
+    fetchOrders()
+    let cleanup: (() => void) | null = null
+    import('@/lib/api').then(({ subscribeToOrders }) => {
+      cleanup = subscribeToOrders(() => fetchOrders())
+    })
+    return () => { if (cleanup) cleanup() }
+  }, [fetchOrders])
 
   useEffect(() => {
     if (tab === 'historico' || tab === 'relatorio') fetchOrders()
