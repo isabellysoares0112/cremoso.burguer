@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { ShoppingBag, Phone, MapPin, Printer, RefreshCw, ChefHat } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useStore } from '@/lib/store'
@@ -57,6 +57,7 @@ function handlePrint(order: Order) {
 
 export function KitchenView() {
   const { orders, loadOrders, updateOrderStatus } = useStore()
+  const [pendingCancel, setPendingCancel] = useState<Order | null>(null)
 
   const load = useCallback(async () => {
     try { await loadOrders() } catch { /* silent */ }
@@ -189,6 +190,16 @@ export function KitchenView() {
                       <Printer className="w-4 h-4 mr-2" />
                       Imprimir
                     </Button>
+                    {(order.status === 'novo' || order.status === 'preparando') && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPendingCancel(order)}
+                        className="border-destructive text-destructive hover:bg-destructive/10"
+                      >
+                        Cancelar
+                      </Button>
+                    )}
                     {nextStatus && (
                       <Button
                         size="sm"
@@ -211,6 +222,34 @@ export function KitchenView() {
           </div>
         )}
       </div>
+
+      {/* Diálogo de confirmação de cancelamento */}
+      {pendingCancel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setPendingCancel(null)} />
+          <div className="relative bg-card border border-border rounded-xl shadow-xl p-6 w-full max-w-sm mx-4 space-y-4">
+            <h2 className="text-lg font-bold text-foreground">Tem certeza que deseja cancelar este pedido?</h2>
+            <div className="bg-muted rounded-lg p-3 space-y-1 text-sm">
+              <p className="font-bold text-foreground">#{String(pendingCancel.number).padStart(3, '0')} — {pendingCancel.customer.name}</p>
+              <p className="text-primary font-bold">{fmt(pendingCancel.total)}</p>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <Button variant="outline" onClick={() => setPendingCancel(null)} className="border-border">
+                Voltar
+              </Button>
+              <Button
+                onClick={async () => {
+                  await updateOrderStatus(pendingCancel.id, 'cancelado')
+                  setPendingCancel(null)
+                }}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Confirmar Cancelamento
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
