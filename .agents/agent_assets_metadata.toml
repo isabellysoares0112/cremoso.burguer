@@ -12,3 +12,9 @@ id = "RIEnFey0sJ2Qo8ATAbp16"
 uri = "file://novos_arquivos_repo.tar.gz"
 type = "unspecified"
 title = "Arquivos novos do repositório + Relatório"
+
+[[outputs]]
+id = "xJ8ExlLO944N1R8MuL5D8"
+uri = "file://auditoria-persistencia.md"
+type = "text"
+title = "Auditoria de Persistência — Cremoso Burguer"
