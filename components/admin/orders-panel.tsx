@@ -170,7 +170,9 @@ export function OrdersPanel() {
                           <option value="preparando">Preparando</option>
                           <option value="pronto">Pronto</option>
                           <option value="entregue">Entregue</option>
-                          <option value="cancelado">Cancelado</option>
+                          {order.status !== 'entregue' && (
+                            <option value="cancelado">Cancelado</option>
+                          )}
                         </select>
                       </td>
                       <td className="p-4 text-muted-foreground text-sm hidden lg:table-cell">
