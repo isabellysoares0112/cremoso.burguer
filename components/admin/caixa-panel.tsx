@@ -90,9 +90,9 @@ export function CaixaPanel() {
     if (tab === 'historico' || tab === 'relatorio') fetchOrders()
   }, [tab, fetchOrders])
 
-  /* Filtered by date */
-  const filteredOrders = orders.filter(o => o.createdAt?.slice(0, 10) === dateFilter)
-  const todayOrders = orders.filter(o => o.createdAt?.slice(0, 10) === todayStr())
+  /* Filtered by date — cancelados excluídos dos cálculos financeiros */
+  const filteredOrders = orders.filter(o => o.createdAt?.slice(0, 10) === dateFilter && o.status !== 'cancelado')
+  const todayOrders = orders.filter(o => o.createdAt?.slice(0, 10) === todayStr() && o.status !== 'cancelado')
 
   /* Totals by payment method */
   const calcTotals = (list: OrderSummary[]) => ({
@@ -116,7 +116,7 @@ export function CaixaPanel() {
     const d = subDays(new Date(), 6 - i)
     const ds = startOfDay(d)
     const dayStr = d.toISOString().slice(0, 10)
-    const dayOrders = orders.filter(o => o.createdAt?.slice(0, 10) === dayStr)
+    const dayOrders = orders.filter(o => o.createdAt?.slice(0, 10) === dayStr && o.status !== 'cancelado')
     return {
       label: format(ds, 'EEE', { locale: ptBR }),
       date: dayStr,
