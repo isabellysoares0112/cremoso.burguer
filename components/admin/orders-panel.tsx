@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Search, Filter, MessageCircle } from 'lucide-react'
 import { useStore } from '@/lib/store'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 import { subscribeToOrders } from '@/lib/api'
 import type { OrderStatus } from '@/lib/types'
 import { format } from 'date-fns'
@@ -30,6 +31,7 @@ export function OrdersPanel() {
   const { orders, updateOrderStatus, loadOrders } = useStore()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all')
+  const [pendingCancel, setPendingCancel] = useState<{ orderId: string; previousStatus: OrderStatus } | null>(null)
 
   useEffect(() => {
     loadOrders()
@@ -59,9 +61,21 @@ export function OrdersPanel() {
     })
   }
 
-  const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
-    await updateOrderStatus(orderId, newStatus)
+  const handleStatusChange = (orderId: string, newStatus: OrderStatus, currentStatus: OrderStatus) => {
+    if (newStatus === 'cancelado') {
+      setPendingCancel({ orderId, previousStatus: currentStatus })
+      return
+    }
+    updateOrderStatus(orderId, newStatus)
   }
+
+  const confirmCancel = async () => {
+    if (!pendingCancel) return
+    await updateOrderStatus(pendingCancel.orderId, 'cancelado')
+    setPendingCancel(null)
+  }
+
+  const dismissCancel = () => setPendingCancel(null)
 
   const handleWhatsApp = (order: Parameters<typeof getWhatsAppMessage>[0], status: OrderStatus) => {
     const msg = getWhatsAppMessage(order, status)
@@ -149,7 +163,7 @@ export function OrdersPanel() {
                       <td className="p-4">
                         <select
                           value={order.status}
-                          onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus)}
+                          onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus, order.status)}
                           className={`px-3 py-1 rounded-full text-xs font-bold border-0 ${statusStyle.bg} ${statusStyle.text}`}
                         >
                           <option value="novo">Novo</option>
@@ -205,6 +219,27 @@ export function OrdersPanel() {
           )
         })}
       </div>
+
+      {/* Confirmation dialog — cancelamento */}
+      {pendingCancel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={dismissCancel} />
+          <div className="relative bg-card border border-border rounded-xl shadow-xl p-6 w-full max-w-sm mx-4 space-y-4">
+            <h2 className="text-lg font-bold text-foreground">Cancelar pedido?</h2>
+            <p className="text-sm text-muted-foreground">
+              Esta ação não pode ser desfeita. O pedido será marcado como cancelado e removido dos cálculos financeiros.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <Button variant="outline" onClick={dismissCancel} className="border-border">
+                Manter pedido
+              </Button>
+              <Button onClick={confirmCancel} className="bg-red-600 hover:bg-red-700 text-white">
+                Confirmar cancelamento
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
