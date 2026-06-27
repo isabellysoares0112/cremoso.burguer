@@ -42,18 +42,16 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   const secret = process.env.SESSION_SECRET
 
-  const isApiRoute = pathname.startsWith('/api/admin/')
-  const isPageRoute =
-    pathname.startsWith('/equipe/admin') ||
-    pathname.startsWith('/equipe/entregador')
+  const isApiAdmin = pathname.startsWith('/api/admin/')
+  const isPageAdmin = pathname.startsWith('/equipe/admin/')
 
-  if (!isApiRoute && !isPageRoute) {
+  if (!isApiAdmin && !isPageAdmin) {
     return NextResponse.next()
   }
 
   if (!secret) {
-    console.error('[middleware] SESSION_SECRET not configured')
-    if (isApiRoute) {
+    console.error('[middleware] SESSION_SECRET não configurado')
+    if (isApiAdmin) {
       return NextResponse.json({ error: 'Servidor não configurado' }, { status: 500 })
     }
     return NextResponse.redirect(new URL('/equipe', req.url))
@@ -63,7 +61,7 @@ export async function middleware(req: NextRequest) {
   const valid = cookieValue !== '' && (await verifySession(cookieValue, secret))
 
   if (!valid) {
-    if (isApiRoute) {
+    if (isApiAdmin) {
       return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
     }
     return NextResponse.redirect(new URL('/equipe', req.url))
@@ -76,6 +74,5 @@ export const config = {
   matcher: [
     '/api/admin/:path*',
     '/equipe/admin/:path*',
-    '/equipe/entregador/:path*',
   ],
 }
