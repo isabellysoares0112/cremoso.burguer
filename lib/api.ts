@@ -145,13 +145,9 @@ export async function fetchOrders(): Promise<Order[]> {
 }
 
 async function nextOrderNumber(): Promise<number> {
-  const { data } = await supabase
-    .from('pedidos')
-    .select('numero_pedido')
-    .order('numero_pedido', { ascending: false })
-    .limit(1)
-  if (!data || data.length === 0) return 1
-  return Number((data[0] as { numero_pedido: number }).numero_pedido || 0) + 1
+  const { data, error } = await supabase.rpc('next_pedido_number')
+  if (error) throw new Error(`next_pedido_number RPC failed: ${error.message}`)
+  return Number(data)
 }
 
 export async function createOrder(input: {
