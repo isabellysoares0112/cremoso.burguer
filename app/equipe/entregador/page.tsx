@@ -18,8 +18,8 @@ export default function EntregadorPage() {
     }
   }, [user, router])
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     router.push('/equipe')
   }
 

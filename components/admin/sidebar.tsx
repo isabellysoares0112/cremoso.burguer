@@ -57,8 +57,8 @@ export function AdminSidebar() {
     return () => document.removeEventListener('mousedown', handler)
   }, [expanded])
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     router.push('/equipe')
   }
 

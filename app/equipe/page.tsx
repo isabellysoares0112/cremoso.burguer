@@ -12,13 +12,13 @@ import type { UserRole } from '@/lib/types'
 export default function EquipePage() {
   const router = useRouter()
   const { login, user } = useStore()
-  
+
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [selectedRole, setSelectedRole] = useState<UserRole>('admin')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  // If already logged in, redirect (after render)
   useEffect(() => {
     if (user) {
       if (user.role === 'admin') {
@@ -31,12 +31,15 @@ export default function EquipePage() {
 
   if (user) return null
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    setLoading(true)
 
-    const success = login(username, password, selectedRole)
-    
+    const success = await login(username, password, selectedRole)
+
+    setLoading(false)
+
     if (success) {
       if (selectedRole === 'admin') {
         router.push('/equipe/admin')
@@ -127,22 +130,12 @@ export default function EquipePage() {
 
           <Button
             type="submit"
+            disabled={loading}
             className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold py-6 glow-yellow"
           >
-            ENTRAR
+            {loading ? 'ENTRANDO...' : 'ENTRAR'}
           </Button>
         </form>
-
-        {/* Demo credentials */}
-        <div className="mt-8 p-4 bg-muted/50 rounded-lg">
-          <p className="text-xs text-muted-foreground text-center mb-2">
-            Credenciais de demonstração:
-          </p>
-          <div className="text-xs text-muted-foreground space-y-1">
-            <p><strong>Admin:</strong> admin / admin123</p>
-            <p><strong>Entregador:</strong> entregador / entrega123</p>
-          </div>
-        </div>
       </div>
     </div>
   )
