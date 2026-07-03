@@ -3,6 +3,14 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
 export const runtime = 'nodejs'
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const ALLOWED_TYPES: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+}
+
 export async function POST(req: Request) {
   try {
     const form = await req.formData()
@@ -11,7 +19,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
     }
 
-    const ext = file.name.includes('.') ? file.name.split('.').pop() : 'jpg'
+    const ext = ALLOWED_TYPES[file.type]
+    if (!ext) {
+      return NextResponse.json(
+        { error: 'Tipo de arquivo não permitido. Envie JPEG, PNG, WEBP ou GIF.' },
+        { status: 400 }
+      )
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: 'Arquivo muito grande. Máximo de 5MB.' },
+        { status: 400 }
+      )
+    }
+
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
 
     const buffer = Buffer.from(await file.arrayBuffer())
