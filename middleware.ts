@@ -42,7 +42,14 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   const secret = process.env.SESSION_SECRET
 
-  const isApiAdmin = pathname.startsWith('/api/admin/')
+  // Rotas que usam o client admin do Supabase (service role) e por isso
+  // precisam da mesma checagem de sessão que /api/admin/*, mesmo não
+  // vivendo debaixo desse prefixo.
+  const extraProtectedApiRoutes = ['/api/upload', '/api/setup']
+
+  const isApiAdmin =
+    pathname.startsWith('/api/admin/') ||
+    extraProtectedApiRoutes.some((route) => pathname === route || pathname.startsWith(`${route}/`))
   const isPageAdmin = pathname.startsWith('/equipe/admin/')
 
   if (!isApiAdmin && !isPageAdmin) {
@@ -74,5 +81,7 @@ export const config = {
   matcher: [
     '/api/admin/:path*',
     '/equipe/admin/:path*',
+    '/api/upload',
+    '/api/setup',
   ],
 }
