@@ -16,20 +16,20 @@ const FALLBACK_CATEGORIES = [
 ]
 
 export function Menu() {
-  const { products, categories, loadProducts, loadCategories } = useStore()
+  const { products, categories, loadMenu } = useStore()
   const [activeCategory, setActiveCategory] = useState<string>('hamburgueres')
   const [loading, setLoading] = useState(true)
   const [modalProduct, setModalProduct] = useState<Product | null>(null)
 
   useEffect(() => {
     let mounted = true
-    Promise.all([loadProducts(), loadCategories()]).finally(() => {
+    loadMenu().finally(() => {
       if (mounted) setLoading(false)
     })
     return () => {
       mounted = false
     }
-  }, [loadProducts, loadCategories])
+  }, [loadMenu])
 
   const displayedCategories = useMemo(() => {
     if (categories && categories.length > 0) {
