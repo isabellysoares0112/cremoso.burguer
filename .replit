@@ -32,3 +32,14 @@ waitForPort = 5000
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[userenv]
+
+[userenv.shared]
+NEXT_PUBLIC_SUPABASE_URL = "https://zhzlctetqzfypztvpzfg.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoemxjdGV0cXpmeXB6dHZwemZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMjY3NDIsImV4cCI6MjA5MjkwMjc0Mn0.gdjBaox6ndHJgSGZWvzg2QDB2Mt_cO-8q5Z74Og0fQE"
+SUPABASE_SERVICE_ROLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoemxjdGV0cXpmeXB6dHZwemZnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NzMyNjc0MiwiZXhwIjoyMDkyOTAyNzQyfQ.R1XMgaqpgqkWkooHqjy3wsCzeJrGt_RjYMB5c1iCrXk"
+ADMIN_USERNAME = "Admin"
+ADMIN_PASSWORD = "Admincremoso0112"
+ENTREGADOR_USERNAME = "Entregador "
+ENTREGADOR_PASSWORD = "Entregadorcremoso0112"
