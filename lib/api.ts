@@ -10,6 +10,20 @@ export interface Category {
   sort_order: number
 }
 
+// ---------------- Public menu (single request — no auth required) ----------------
+export async function fetchPublicMenu(): Promise<{ categories: Category[]; products: Product[] }> {
+  const res = await fetch('/api/menu', { cache: 'no-store' })
+  if (!res.ok) {
+    console.error('fetchPublicMenu failed:', await res.text())
+    return { categories: [], products: [] }
+  }
+  const json = await res.json()
+  return {
+    categories: (json.categories || []) as Category[],
+    products: (json.products || []) as Product[],
+  }
+}
+
 // ---------------- Categories ----------------
 export async function fetchCategories(): Promise<Category[]> {
   const res = await fetch('/api/admin/categories', { cache: 'no-store' })

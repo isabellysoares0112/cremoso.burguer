@@ -43,6 +43,7 @@ interface AppState {
   updateSettings: (data: Partial<Settings>) => void
 
   products: Product[]
+  loadMenu: () => Promise<void>
   loadProducts: () => Promise<void>
   addProduct: (input: Omit<Product, 'id'>) => Promise<void>
   updateProduct: (id: string, data: Partial<Product>) => Promise<void>
@@ -111,6 +112,10 @@ export const useStore = create<AppState>()((set, get) => ({
 
   /* PRODUCTS */
   products: [],
+  loadMenu: async () => {
+    const { categories, products } = await api.fetchPublicMenu()
+    set({ products, categories })
+  },
   loadProducts: async () => {
     const data = await api.fetchProducts()
     set({ products: data })
