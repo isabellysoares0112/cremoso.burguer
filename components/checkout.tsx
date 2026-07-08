@@ -153,6 +153,30 @@ export function Checkout({ onBack, onComplete }: CheckoutProps) {
       return
     }
 
+    if (cupomValidado?.codigo) {
+      try {
+        const revalRes = await fetch('/api/cupom/validar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ codigo: cupomValidado.codigo }),
+        })
+        const revalJson = await revalRes.json()
+        if (!revalRes.ok) {
+          setCupomValidado(null)
+          setCouponCode('')
+          setCouponError(revalJson.error || 'Cupom inválido')
+          alert(`Não foi possível aplicar o cupom: ${revalJson.error || 'Cupom inválido'}. O pedido não foi criado.`)
+          return
+        }
+      } catch {
+        setCupomValidado(null)
+        setCouponCode('')
+        setCouponError('Erro ao revalidar cupom')
+        alert('Não foi possível verificar o cupom. Tente novamente.')
+        return
+      }
+    }
+
     setIsSubmitting(true)
 
     const order = await addOrder(
