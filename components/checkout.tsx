@@ -169,15 +169,6 @@ export function Checkout({ onBack, onComplete }: CheckoutProps) {
       return
     }
 
-    // Increment coupon usage
-    if (cupomValidado?.codigo) {
-      fetch('/api/cupom/usar', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ codigo: cupomValidado.codigo }),
-      }).catch(() => { /* silent */ })
-    }
-
     const itemsList = cart
       .map((item) => {
         const addonsPrice = (item.addons || []).reduce(
@@ -226,6 +217,13 @@ ${itemsList}${globalObsLine}
     if (!rawPhone) {
       alert('WhatsApp não configurado. Acesse Área da Equipe → Configurações para cadastrar o número.')
       setIsSubmitting(false)
+      if (cupomValidado?.codigo) {
+        fetch('/api/cupom/usar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ codigo: cupomValidado.codigo }),
+        }).catch((err) => { console.error('[cupom/usar] falhou silenciosamente:', err) })
+      }
       saveOrderHistory(order)
       onComplete(order)
       return
@@ -235,6 +233,13 @@ ${itemsList}${globalObsLine}
     if (!phone || phone.length < 10) {
       alert('Número de WhatsApp inválido. Verifique nas Configurações.')
       setIsSubmitting(false)
+      if (cupomValidado?.codigo) {
+        fetch('/api/cupom/usar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ codigo: cupomValidado.codigo }),
+        }).catch((err) => { console.error('[cupom/usar] falhou silenciosamente:', err) })
+      }
       saveOrderHistory(order)
       onComplete(order)
       return
@@ -250,6 +255,15 @@ ${itemsList}${globalObsLine}
 
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank')
     setIsSubmitting(false)
+
+    if (cupomValidado?.codigo) {
+      fetch('/api/cupom/usar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo: cupomValidado.codigo }),
+      }).catch((err) => { console.error('[cupom/usar] falhou silenciosamente:', err) })
+    }
+
     saveOrderHistory(order)
     onComplete(order)
   }
@@ -300,6 +314,14 @@ ${itemsList}
         window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, '_blank')
       }
     }
+    if (cupomValidado?.codigo) {
+      fetch('/api/cupom/usar', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo: cupomValidado.codigo }),
+      }).catch((err) => { console.error('[cupom/usar PIX] falhou silenciosamente:', err) })
+    }
+
     saveOrderHistory(pixOrder)
     onComplete(pixOrder)
   }
