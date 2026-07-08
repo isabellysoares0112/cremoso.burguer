@@ -11,38 +11,38 @@ export async function POST(req: NextRequest) {
   if (!codigo) return NextResponse.json({ error: 'Código obrigatório' }, { status: 400 })
 
   const { data, error } = await supabaseAdmin
-    .from('cupons')
+    .from('coupons')
     .select('*')
-    .eq('codigo', codigo)
+    .eq('code', codigo)
     .single()
 
   if (error || !data) {
     return NextResponse.json({ error: 'Cupom não encontrado' }, { status: 404 })
   }
 
-  if (!data.ativo) {
+  if (!data.active) {
     return NextResponse.json({ error: 'Cupom inativo' }, { status: 400 })
   }
 
-  if (data.validade) {
+  if (data.expires_at) {
     const hoje = new Date()
     hoje.setHours(0, 0, 0, 0)
-    const validade = new Date(data.validade + 'T00:00:00')
+    const validade = new Date(String(data.expires_at).split('T')[0] + 'T00:00:00')
     if (validade < hoje) {
       return NextResponse.json({ error: 'Cupom expirado' }, { status: 400 })
     }
   }
 
-  if (data.limite_uso !== null && data.uso_atual >= data.limite_uso) {
+  if (data.usage_limit !== null && data.usage_count >= data.usage_limit) {
     return NextResponse.json({ error: 'Cupom esgotado' }, { status: 400 })
   }
 
   return NextResponse.json({
     cupom: {
       id: data.id,
-      codigo: data.codigo,
-      desconto_tipo: data.desconto_tipo,
-      desconto_valor: data.desconto_valor,
+      codigo: data.code,
+      desconto_tipo: data.discount_type === 'percentage' ? 'percentual' : 'fixo',
+      desconto_valor: data.discount_value,
     },
   })
 }
