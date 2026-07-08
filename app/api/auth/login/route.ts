@@ -35,17 +35,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Servidor não configurado' }, { status: 500 })
     }
 
+    const normalizedUsername = username.trim().toLowerCase()
+
     let validUser: { id: string; username: string; role: string } | null = null
 
     if (
       role === 'admin' &&
-      username === adminUser &&
+      normalizedUsername === adminUser?.trim().toLowerCase() &&
       password === adminPass
     ) {
       validUser = { id: '1', username, role: 'admin' }
     } else if (
       role === 'entregador' &&
-      username === entregadorUser &&
+      normalizedUsername === entregadorUser?.trim().toLowerCase() &&
       password === entregadorPass
     ) {
       validUser = { id: '2', username, role: 'entregador' }
