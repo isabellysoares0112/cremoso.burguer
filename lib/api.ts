@@ -177,7 +177,13 @@ export async function createOrder(input: {
   const numero_pedido = await nextOrderNumber()
   const discount = input.discount ?? 0
   const observacoes = JSON.stringify({ items: input.items, observation: input.observation || '' })
+
+  // Generate UUID client-side so we never need anon SELECT after INSERT
+  const id = crypto.randomUUID()
+  const now = new Date()
+
   const payload = {
+    id,
     numero_pedido,
     cliente_nome: input.customer.name,
     telefone: input.customer.phone,
@@ -190,8 +196,13 @@ export async function createOrder(input: {
     taxa_entrega: input.deliveryFee,
     total: input.subtotal + input.deliveryFee - discount,
   }
-  const { data, error } = await supabase.from('pedidos').insert(payload).select().single()
+
+  // INSERT only — no SELECT needed (anon has no read permission)
+  const { error } = await supabase.from('pedidos').insert(payload)
   if (error) throw error
+
+  // Fire-and-forget: notify admin panels via server-side broadcast
+  fetch('/api/notify/orders', { method: 'POST' }).catch(() => {})
 
   // Best-effort: also save customer (anon may be blocked; ignore failure)
   if (input.customer?.name) {
@@ -204,8 +215,8 @@ export async function createOrder(input: {
   }
 
   return {
-    id: data.id,
-    number: data.numero_pedido,
+    id,
+    number: numero_pedido,
     customer: input.customer,
     items: input.items,
     subtotal: input.subtotal,
@@ -216,8 +227,8 @@ export async function createOrder(input: {
     paymentMethod: input.paymentMethod,
     status: 'novo' as OrderStatus,
     observation: input.observation || '',
-    createdAt: new Date(data.created_at),
-    updatedAt: new Date(data.created_at),
+    createdAt: now,
+    updatedAt: now,
   }
 }
 
@@ -231,16 +242,12 @@ export async function updateOrderStatus(id: string, status: OrderStatus): Promis
 }
 
 export function subscribeToOrders(onChange: () => void) {
-  const channelName = `pedidos-changes-${Math.random().toString(36).slice(2)}`
-  const channel = supabase.channel(channelName)
+  // Uses Supabase Broadcast — no table SELECT permission required.
+  // The admin panels load actual data through protected server-side routes;
+  // this channel only carries the "something changed" ping.
+  const channel = supabase.channel('cremoso:orders')
   channel
-    .on(
-      'postgres_changes' as never,
-      { event: '*', schema: 'public', table: 'pedidos' },
-      () => {
-        onChange()
-      }
-    )
+    .on('broadcast', { event: 'change' }, () => onChange())
     .subscribe()
   return () => {
     supabase.removeChannel(channel)
